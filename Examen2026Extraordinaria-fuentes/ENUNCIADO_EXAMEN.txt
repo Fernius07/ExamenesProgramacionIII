@@ -1,0 +1,278 @@
+===============================================================================
+UNIVERSIDAD DE DEUSTO
+FACULTAD DE INGENIERÍA
+PROGRAMACIÓN III
+
+EXAMEN EXTRAORDINARIO - FEBRERO 2026
+
+Sistema de Gestión de Biblioteca
+===============================================================================
+
+INFORMACIÓN GENERAL:
+- Duración: 3 horas
+- El examen consta de 3 tareas obligatorias
+- Se proporcionan las clases del dominio ya implementadas
+- NO es necesario implementar la parte de bases de datos (JDBC)
+- Puedes consultar la documentación de Java y los apuntes de clase
+
+IMPORTANTE: 
+- Compila frecuentemente para detectar errores
+- Prueba cada tarea antes de pasar a la siguiente
+- Lee cuidadosamente los comentarios TODO en el código
+- NO modifiques las clases del dominio
+
+===============================================================================
+CONTEXTO DEL EXAMEN
+===============================================================================
+
+Estás desarrollando un sistema de gestión para una biblioteca universitaria.
+El sistema debe permitir:
+- Gestionar un catálogo de libros con sus autores
+- Realizar búsquedas recursivas en el catálogo
+- Visualizar el catálogo en una interfaz gráfica
+- Simular el sistema de iluminación automática de la biblioteca
+
+Se proporcionan las siguientes clases del dominio (paquete 'dominio'):
+- Autor: Representa a un autor con su nombre y nacionalidad
+- Genero: Enumeración con los géneros literarios
+- Libro: Representa un libro con título, autor, género, año, páginas y disponibilidad
+- Usuario: Representa a un usuario de la biblioteca con tipo y límite de préstamos
+- Prestamo: Representa un préstamo de un libro a un usuario
+
+===============================================================================
+TAREA 1: RECURSIVIDAD (30 puntos)
+===============================================================================
+
+Archivo: es.deusto.prog.biblioteca.recursividad.MainRecursividad
+
+Debes implementar DOS métodos recursivos para buscar información en una lista
+de libros. Es OBLIGATORIO usar recursión, NO se pueden usar bucles.
+
+1.1. Método contarLibrosPorGenero (15 puntos)
+---------------------------------------------
+Cuenta cuántos libros hay de un género específico en la lista.
+
+Firma del método:
+    public static int contarLibrosPorGenero(List<Libro> libros, Genero genero)
+
+Debes crear un método auxiliar recursivo que reciba un índice adicional:
+    private static int contarLibrosPorGeneroRec(List<Libro> libros, 
+                                                 Genero genero, 
+                                                 int indice)
+
+Requisitos:
+- Caso base: cuando el índice llegue al final de la lista, retornar 0
+- Caso recursivo: si el libro en la posición actual es del género buscado,
+  sumar 1 y llamar recursivamente con el siguiente índice
+- NO usar bucles (for, while, etc.)
+
+Ejemplo de salida esperada:
+    Libros de Ciencia Ficción: 4
+    Libros de Fantasía: 4
+    Libros de Misterio: 2
+
+
+1.2. Método buscarLibrosPorPaginas (15 puntos)
+----------------------------------------------
+Busca y muestra todos los libros que tienen un número de páginas mayor o 
+igual al especificado.
+
+Firma del método:
+    public static void buscarLibrosPorPaginas(List<Libro> libros, 
+                                               int paginasMinimas)
+
+Debes crear un método auxiliar recursivo:
+    private static void buscarLibrosPorPaginasRec(List<Libro> libros, 
+                                                   int paginasMinimas, 
+                                                   int indice)
+
+Requisitos:
+- Caso base: cuando el índice llegue al final de la lista, terminar
+- Caso recursivo: si el libro cumple la condición de páginas, imprimirlo
+  Luego llamar recursivamente con el siguiente índice
+- Formato de salida: "  - [Título] ([Páginas] págs.)"
+- NO usar bucles
+
+Ejemplo de salida esperada:
+    Libros con 500 o más páginas:
+      - El Señor de los Anillos (1178 págs.)
+      - Don Quijote de la Mancha (863 págs.)
+      - Harry Potter y el cáliz de fuego (636 págs.)
+
+===============================================================================
+TAREA 2: SWING - JTable y Eventos (35 puntos)
+===============================================================================
+
+Archivos: 
+- es.deusto.prog.biblioteca.swing.MainSwing
+- es.deusto.prog.biblioteca.swing.LibroTableModel (ya implementado)
+
+Se proporciona una interfaz gráfica con una JTable que muestra el catálogo
+de libros. El LibroTableModel ya está implementado y funcional.
+
+2.1. Ajustar el renderizado de la tabla (15 puntos)
+---------------------------------------------------
+En el método MainSwing(), después de crear la tabla, debes ajustar:
+
+a) Altura de las filas: 35 píxeles
+   Pista: tablaLibros.setRowHeight(...)
+
+b) Ancho de las columnas:
+   - Columna "Título" (índice 0): 300 píxeles
+   - Columna "Autor" (índice 1): 200 píxeles
+   - Columna "Páginas" (índice 4): 80 píxeles
+   Pista: tablaLibros.getColumnModel().getColumn(i).setPreferredWidth(...)
+
+c) Altura del encabezado de la tabla: 30 píxeles
+   Pista: tablaLibros.getTableHeader().setPreferredSize(new Dimension(0, 30))
+
+
+2.2. Gestión de eventos - Doble clic (20 puntos)
+------------------------------------------------
+Añade un MouseListener a la tabla para que cuando el usuario haga DOBLE CLIC
+en una fila, se muestre un JOptionPane con la información completa del libro.
+
+Requisitos:
+- Detectar doble clic usando e.getClickCount() == 2
+- Obtener la fila seleccionada con tablaLibros.getSelectedRow()
+- Obtener el libro usando modeloLibros.getLibro(fila)
+- Mostrar la información usando libroSeleccionado.toString()
+- Usar JOptionPane.showMessageDialog() con tipo INFORMATION_MESSAGE
+
+Pista para el MouseListener:
+    tablaLibros.addMouseListener(new java.awt.event.MouseAdapter() {
+        @Override
+        public void mouseClicked(java.awt.event.MouseEvent e) {
+            // Tu código aquí
+        }
+    });
+
+===============================================================================
+TAREA 3: HILOS - Simulación de Iluminación (35 puntos)
+===============================================================================
+
+Archivo: es.deusto.prog.biblioteca.hilos.MainThreads
+
+Debes implementar un sistema de iluminación automática para la biblioteca.
+Hay 5 estantes con 8 secciones cada uno (40 paneles en total). Cada sección
+tiene su propio sensor de movimiento que enciende/apaga la luz de forma
+independiente.
+
+Objetivo:
+Simular que cada panel (sección) enciende (color AMARILLO) y apaga 
+(color LIGHT_GRAY) su luz de forma independiente y aleatoria.
+
+Requisitos:
+
+3.1. Crear hilos para cada panel (20 puntos)
+--------------------------------------------
+- Cada uno de los 40 paneles debe tener su propio hilo
+- Cada hilo debe alternar el color de su panel entre LIGHT_GRAY y YELLOW
+- El intervalo entre cambios debe ser aleatorio: entre 800 y 2000 milisegundos
+- Usa el método tiempoAleatorio() ya proporcionado
+
+Pista: Puedes crear una clase interna que extienda Thread o implemente Runnable
+
+
+3.2. Implementar los botones de control (15 puntos)
+---------------------------------------------------
+
+a) Botón "Iniciar Sistema":
+   - Crear y arrancar todos los hilos (uno por cada panel)
+   - Actualizar el estado del lblEstado
+   - Deshabilitar el botón "Iniciar"
+   - Habilitar los botones "Pausar" y "Detener"
+
+b) Botón "Pausar/Reanudar":
+   - Pausar todos los hilos sin detenerlos (usar wait/notify)
+   - Cambiar el texto del botón entre "Pausar" y "Reanudar"
+   - Actualizar el lblEstado según el estado
+
+c) Botón "Detener":
+   - Detener todos los hilos completamente
+   - Llamar al método resetearInterfaz() ya proporcionado
+   - Los hilos deben terminar su ejecución (join)
+
+
+IMPORTANTE:
+- Usa SwingUtilities.invokeLater() para actualizar la interfaz desde los hilos
+- Usa variables volatile o synchronized para controlar el estado pausado/detenido
+- NO olvides hacer join() de los hilos al detener para evitar problemas
+
+Pista de estructura:
+    private List<Thread> hilos;
+    private volatile boolean pausado = false;
+    private volatile boolean detenido = false;
+
+===============================================================================
+CRITERIOS DE EVALUACIÓN
+===============================================================================
+
+TAREA 1 - Recursividad (30 puntos):
+- Implementación correcta del caso base (5 puntos por método)
+- Implementación correcta del caso recursivo (7 puntos por método)
+- NO uso de bucles (3 puntos por método)
+- Resultados correctos en los casos de prueba
+
+TAREA 2 - Swing (35 puntos):
+- Ajuste correcto de dimensiones de tabla (15 puntos)
+- Detección correcta del doble clic (10 puntos)
+- Mostrar información correcta en el diálogo (10 puntos)
+
+TAREA 3 - Hilos (35 puntos):
+- Creación correcta de hilos independientes (10 puntos)
+- Funcionamiento correcto de iniciar (5 puntos)
+- Funcionamiento correcto de pausar/reanudar (10 puntos)
+- Funcionamiento correcto de detener (10 puntos)
+
+===============================================================================
+RECOMENDACIONES PARA HACER EL EXAMEN BIEN
+===============================================================================
+
+GENERALES:
+✓ Lee TODOS los comentarios TODO en el código antes de empezar
+✓ Compila frecuentemente para detectar errores sintácticos pronto
+✓ Prueba cada tarea inmediatamente después de implementarla
+✓ NO modifiques las clases del dominio ni los métodos main proporcionados
+✓ Si te atascas en una tarea, pasa a la siguiente y vuelve después
+
+TAREA 1 - Recursividad:
+✓ Recuerda: toda recursión necesita un caso base y un caso recursivo
+✓ El caso base es cuando NO hay más elementos que procesar
+✓ Usa un índice para recorrer la lista recursivamente
+✓ NO uses bucles for/while - es automático suspenso en esta tarea
+✓ Prueba con listas pequeñas primero para entender el funcionamiento
+
+TAREA 2 - Swing:
+✓ Revisa los ejemplos de JTable vistos en clase
+✓ Los índices de columnas empiezan en 0
+✓ Para el MouseListener, usa MouseAdapter para no implementar todos los métodos
+✓ Recuerda: e.getClickCount() == 2 para detectar doble clic
+✓ Prueba la interfaz ejecutando el main
+
+TAREA 3 - Hilos:
+✓ Es la tarea más compleja - empieza por crear un hilo simple primero
+✓ Cada hilo debe tener un bucle while que verifique si está detenido
+✓ Usa SwingUtilities.invokeLater() para actualizar colores de paneles
+✓ Para pausar, usa wait() dentro de un bloque synchronized
+✓ Para reanudar, usa notifyAll() en el mismo objeto sincronizado
+✓ Usa volatile para variables compartidas entre hilos
+✓ NO olvides hacer join() al detener para esperar que terminen los hilos
+✓ Si los hilos no responden, verifica que estés usando notifyAll() correctamente
+
+GESTIÓN DEL TIEMPO:
+✓ Dedica aproximadamente:
+  - 50 minutos a Recursividad
+  - 60 minutos a Swing
+  - 70 minutos a Hilos
+✓ Deja 10-15 minutos al final para revisar y probar todo
+✓ Si una tarea te lleva mucho tiempo, pasa a la siguiente
+
+DEBUGGING:
+✓ Añade System.out.println() temporales para ver el flujo del programa
+✓ En hilos, imprime el nombre del hilo con Thread.currentThread().getName()
+✓ Verifica que los colores cambien (aunque sea de forma extraña) antes de
+  preocuparte por pausar/detener
+
+¡BUENA SUERTE!
+===============================================================================
